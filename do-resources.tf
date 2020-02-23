@@ -49,7 +49,7 @@ resource "digitalocean_droplet" "swarm_manager" {
   }
 
   provisioner "local-exec" {
-    command = "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${self.ipv4_address} 'docker swarm join-token -q worker' > token.txt"
+    command = "ssh -i ${var.private_ssh_key_location} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${self.ipv4_address} 'docker swarm join-token -q worker' > token.txt"
   }
 }
 
@@ -76,7 +76,7 @@ resource "digitalocean_droplet" "swarm_worker" {
   }
 
   provisioner "local-exec" {
-    command = "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${digitalocean_droplet.swarm_manager.ipv4_address} 'cd /srv && docker stack deploy --compose-file docker-compose.yml testapp'"
+    command = "ssh -i ${var.private_ssh_key_location} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@${digitalocean_droplet.swarm_manager.ipv4_address} 'cd /srv && docker stack deploy --compose-file docker-compose.yml testapp'"
   }
 }
 
