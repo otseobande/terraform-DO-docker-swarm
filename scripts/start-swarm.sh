@@ -1,7 +1,6 @@
 #!/bin/bash
-public_ip=$(hostname -I | cut -d " " -f 3)
-#$(dig +short myip.opendns.com @resolver1.opendns.com)
+private_ip=$(hostname -I | cut -d " " -f 3)
 
 docker swarm init \
---listen-addr $public_ip \
---advertise-addr $public_ip
+--listen-addr $private_ip \
+--advertise-addr $private_ip
