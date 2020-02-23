@@ -2,15 +2,9 @@ variable "do_token" {
   type = string
 }
 
-variable "droplet_ssh_key" {
+variable "droplet_ssh_key_location" {
   type = string
 }
-
-variable "docker_install_script_location" {
-  type = string
-}
-
-
 
 provider "digitalocean" {
   token = var.do_token
@@ -23,8 +17,6 @@ provider "digitalocean" {
 # }
 
 
-
-# Create a new Droplet using the SSH key
 resource "digitalocean_droplet" "swarm_manager" {
   image    = "ubuntu-18-04-x64"
   name     = "swarm-manager-1"
@@ -36,7 +28,7 @@ resource "digitalocean_droplet" "swarm_manager" {
   connection {
     user        = "root"
     type        = "ssh"
-    private_key = file("/Users/otseobande/.ssh/id_rsa")
+    private_key = file("~/.ssh/id_rsa")
     host = self.ipv4_address
   }
 
@@ -57,7 +49,6 @@ resource "digitalocean_droplet" "swarm_manager" {
   }
 }
 
-# Create a new Droplet using the SSH key
 resource "digitalocean_droplet" "swarm_worker" {
   image    = "ubuntu-18-04-x64"
   name     = "swarm-worker-1"
@@ -69,7 +60,7 @@ resource "digitalocean_droplet" "swarm_worker" {
   connection {
     user        = "root"
     type        = "ssh"
-    private_key = file("/Users/otseobande/.ssh/id_rsa")
+    private_key = file("~/.ssh/id_rsa")
     host = self.ipv4_address
   }
 
