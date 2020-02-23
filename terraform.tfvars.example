@@ -1,0 +1,4 @@
+public_ssh_key_location = ""
+private_ssh_key_location = ""
+do_token = ""
+

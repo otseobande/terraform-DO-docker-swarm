@@ -2,19 +2,23 @@ variable "do_token" {
   type = string
 }
 
-variable "droplet_ssh_key_location" {
+variable "public_ssh_key_location" {
   type = string
 }
+
+variable "private_ssh_key_location" {
+  type = string
+}
+
 
 provider "digitalocean" {
   token = var.do_token
 }
 
-# Create a new SSH key
-# resource "digitalocean_ssh_key" "default" {
-#   name       = "Terraform Example"
-#   public_key = file(var.droplet_ssh_key)
-# }
+resource "digitalocean_ssh_key" "default" {
+  name       = "swarm-ssh"
+  public_key = file(var.public_ssh_key_location)
+}
 
 
 resource "digitalocean_droplet" "swarm_manager" {
@@ -23,17 +27,17 @@ resource "digitalocean_droplet" "swarm_manager" {
   region   = "nyc3"
   size     = "s-1vcpu-1gb"
   private_networking = true
-  ssh_keys = ["6a:79:7c:65:49:9c:7d:f1:45:39:f2:21:63:23:a2:68"]
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 
   connection {
     user        = "root"
     type        = "ssh"
-    private_key = file("~/.ssh/id_rsa")
     host = self.ipv4_address
+    private_key = file(var.private_ssh_key_location)
   }
 
   provisioner "file" {
-    source      = "../docker-compose.yml"
+    source      = "docker-compose.yml"
     destination = "/srv/docker-compose.yml"
   }
 
@@ -55,13 +59,13 @@ resource "digitalocean_droplet" "swarm_worker" {
   region   = "nyc3"
   size     = "s-1vcpu-1gb"
   private_networking = true
-  ssh_keys = ["6a:79:7c:65:49:9c:7d:f1:45:39:f2:21:63:23:a2:68"]
+  ssh_keys = [digitalocean_ssh_key.default.fingerprint]
 
   connection {
     user        = "root"
     type        = "ssh"
-    private_key = file("~/.ssh/id_rsa")
     host = self.ipv4_address
+    private_key = file(var.private_ssh_key_location)
   }
 
   provisioner "remote-exec" {
